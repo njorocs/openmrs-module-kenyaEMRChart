@@ -25,6 +25,7 @@
                             var row = '<tr>';
                             row += '<td width="20%">' + item.date_created + '</td>';
                             row += '<td width="20%">' + item.message_type + '</td>';
+                            row += '<td width="20%">' + item.source + '</td>';
                             row += '<td width="20%">' + item.status + '</td>';
                             row += '<td width="20%">' + item.error + '</td>';
                             row += '</tr>';
@@ -62,6 +63,7 @@
                             var row = '<tr>';
                             row += '<td width="20%">' + item.date_created + '</td>';
                             row += '<td width="20%">' + item.message_type + '</td>';
+                            row += '<td width="20%">' + item.source + '</td>';
                             row += '<td width="20%">' + item.status + '</td>';
                             row += '<td width="20%">' + item.error + '</td>';
                             row += '</tr>';
@@ -113,10 +115,6 @@ tr:nth-child(even) {background-color: #f2f2f2;}
 
     <br/>
     <br/>
-    <button id="errorMessages">
-        <img src="${ ui.resourceLink("kenyaui", "images/glyphs/ok.png") }" /> Error messages
-    </button>
-
 </div>
 <br/>
 <div id="showStatus">
@@ -130,6 +128,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
         <tr>
             <th>Date</th>
             <th>Message Type</th>
+            <th>Source</th>
             <th>Status</th>
             <th>Error Status</th>
         </tr>
@@ -140,6 +139,7 @@ tr:nth-child(even) {background-color: #f2f2f2;}
           <tr>
             <td>${ log.date_created }</td>
             <td>${ log.message_type }</td>
+            <td>${ log.source }</td>
             <td>${ log.status }</td>
             <td>${ log.error }</td>
         </tr>

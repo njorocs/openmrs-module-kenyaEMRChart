@@ -37,7 +37,7 @@
 		<constructor-arg value="interopManagerHome.home" />
 		<constructor-arg value="IL Admin" />
 		<constructor-arg value="kenyaemrCharts/interopManagerHome.page" />
-		<constructor-arg value="kenyaemrCharts:apps/etl_admin.png" />
+		<constructor-arg value="kenyaemrCharts:apps/il_admin.png" />
 		<constructor-arg value="530" />
 	</bean>
 	
