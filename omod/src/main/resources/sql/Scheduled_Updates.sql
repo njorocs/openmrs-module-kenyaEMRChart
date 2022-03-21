@@ -6340,7 +6340,7 @@ select
 from encounter e
     inner join person p on p.person_id=e.patient_id and p.voided=0
     inner join form f on f.form_id=e.form_id and f.uuid in ('5ee93f48-960b-11ec-b909-0242ac120002')
-    inner join obs o on o.encounter_id = e.encounter_id and o.concept_id in (1651,164258,163042,164204,163042,163049,164254,160047,166650,163138,163137,162871,162875,162760,162749,1473,163556,646) and o.voided=0
+    inner join obs o on o.encounter_id = e.encounter_id and o.concept_id in (1651,164258,163042,164204,163042,163049,164254,160047,166650,163138,163137,162871,162875,162760,162749,1473,163556,1646) and o.voided=0
 where e.voided=0
 and e.date_created >= last_update_time
    or e.date_changed >= last_update_time
