@@ -82,6 +82,7 @@ max(if(pat.uuid='b8d0b331-1d2d-4a9a-b741-1816f498bdb6', pa.value, null)) as emai
 max(if(pat.uuid='848f5688-41c6-464c-b078-ea6524a3e971', pa.value, null)) as unit,
 max(if(pat.uuid='96a99acd-2f11-45bb-89f7-648dbcac5ddf', pa.value, null)) as cadre,
 max(if(pat.uuid='9f1f8254-20ea-4be4-a14d-19201fe217bf', pa.value, null)) as kdod_rank,
+max(if(pat.uuid='7c94bd35-fba7-4ef7-96f5-29c89a318fcf', pa.value, null)) as patient_contact,
 greatest(ifnull(pa.date_changed,'0000-00-00'),pa.date_created) as latest_date
 from person_attribute pa
 inner join
@@ -105,6 +106,7 @@ and pat.uuid in (
 	'848f5688-41c6-464c-b078-ea6524a3e971', -- unit
 	'96a99acd-2f11-45bb-89f7-648dbcac5ddf', -- cadre
 	'9f1f8254-20ea-4be4-a14d-19201fe217bf' -- rank
+	'7c94bd35-fba7-4ef7-96f5-29c89a318fcf' -- patient_contact
 
 	)
 where pa.date_created >= last_update_time
@@ -123,6 +125,7 @@ set d.phone_number=att.phone_number,
 	d.unit=att.unit,
 	d.cadre=att.cadre,
 	d.kdod_rank=att.kdod_rank,
+	d.patient_contact=att.patient_contact,
 	d.date_last_modified=if(att.latest_date > ifnull(d.date_last_modified,'0000-00-00'),att.latest_date,d.date_last_modified);
 
 
