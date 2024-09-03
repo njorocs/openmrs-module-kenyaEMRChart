@@ -4756,6 +4756,7 @@ CREATE PROCEDURE sp_populate_dwapi_patient_contact()
                                     r.date_changed,
                                     r.voided
                              from relationship r
+                                      inner join person p on p.person_id = r.person_a and p.voided = 0
                                       inner join relationship_type t on r.relationship = t.relationship_type_id ) r
                             on e.patient_id = r.patient_contact and r.voided = 0 and (r.end_date is null or
                                                                                       r.end_date > current_date)
