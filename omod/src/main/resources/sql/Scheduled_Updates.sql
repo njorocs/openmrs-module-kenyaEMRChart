@@ -2347,6 +2347,7 @@ CREATE PROCEDURE sp_update_drug_event(IN last_update_time DATETIME)
           when 1194 then "RH"
           when 159851 then "RHE"
           when 1108 then "EH"
+          when 2001184 then "TAF/3TC/DTG"
           else ""
           end ),null)) as regimen,
         max(if(o.concept_id=1193,(
@@ -2401,6 +2402,7 @@ CREATE PROCEDURE sp_update_drug_event(IN last_update_time DATETIME)
           when 159851 then "RHE"
           when 1108 then "EH"
           when 164968 then "AZT/3TC/DTG"
+          when 2001184 then "TAF/3TC/DTG"
           else ""
           end ),null)) as regimen_name,
         max(if(o.concept_id=163104,(
@@ -3406,7 +3408,7 @@ CREATE PROCEDURE sp_update_etl_patient_triage(IN last_update_time DATETIME)
         max(if(o.concept_id=1343,o.value_numeric,null)) as muac,
         max(if(o.concept_id=162584,o.value_numeric,null)) as z_score_absolute,
         max(if(o.concept_id=163515,o.value_coded,null)) as z_score,
-        max(if(o.concept_id=163515 or o.concept_id=167392,o.value_coded,null)) as nutritional_status,
+        max(if(o.concept_id=163515 or o.concept_id=167392 or o.concept_id=163300,o.value_coded,null)) as nutritional_status,
           max(if(o.concept_id=163304,o.value_coded,null)) as nutritional_intervention,
         max(if(o.concept_id=1427,date(o.value_datetime),null)) as last_menstrual_period,
         max(if(o.concept_id=160325,o.value_coded,null)) as hpv_vaccinated,
@@ -3418,7 +3420,7 @@ CREATE PROCEDURE sp_update_etl_patient_triage(IN last_update_time DATETIME)
           select encounter_type_id, uuid, name from encounter_type where uuid in('d1059fb9-a079-4feb-a749-eedd709ae542','a0034eee-1940-4e35-847f-97537a35d05e','465a92f2-baf8-42e9-9612-53064be868e8')
         ) et on et.encounter_type_id=e.encounter_type
         left outer join obs o on o.encounter_id=e.encounter_id and o.voided=0
-                                 and o.concept_id in (160430,5089,5090,5085,5086,5088,5087,5242,5092,1343,163515,167392,1427,160325,162584,1154,159368,163304,167231,165932)
+                                 and o.concept_id in (160430,5089,5090,5085,5086,5088,5087,5242,5092,1343,163515,167392,1427,160325,162584,1154,159368,163304,167231,165932,163300)
       where e.voided=0 and e.date_created >= last_update_time
             or e.date_changed >= last_update_time
             or e.date_voided >= last_update_time
