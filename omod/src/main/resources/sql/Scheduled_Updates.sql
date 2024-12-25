@@ -10234,7 +10234,7 @@ BEGIN
                when 'd95e44dd-e389-42ae-a9b6-1160d8eeebc4' then 'Pediatrics'
                when 'da1f7e74-5371-4997-8a02-b7b9303ddb61' then 'Surgical'
                when 'b40d369c-31d0-4c1d-a80a-7e4b7f73bea0' then 'Maxillofacial'
-               when '998be6de-bd13-4136-ba0d-3f772139895f' then 'Cardiology'
+               when 'a3c01460-c346-4f3d-a627-5c7de9494ba0' then 'Dental'
                when '32e43fc9-6de3-48e3-aafe-3b92f167753d' then 'Fertility'
                when '6b4fa553-f2b3-47d0-a4c5-fc11f38b0b24' then 'Gastroenterology' end as special_clinic,
            f.uuid                                                                      as special_clinic_form_uuid
@@ -10258,7 +10258,7 @@ BEGIN
                                                                        '00aa7662-e3fd-44a5-8f3a-f73eb7afa437', -- Medical
                                                                        'da1f7e74-5371-4997-8a02-b7b9303ddb61', -- Surgical
                                                                        '6b4fa553-f2b3-47d0-a4c5-fc11f38b0b24', -- Gastroenterology
-                                                                       '998be6de-bd13-4136-ba0d-3f772139895f', -- Cardiology
+                                                                       'a3c01460-c346-4f3d-a627-5c7de9494ba0', -- Dental
                                                                        '32e43fc9-6de3-48e3-aafe-3b92f167753d', -- Fertility
                                                                        'b40d369c-31d0-4c1d-a80a-7e4b7f73bea0'  -- Maxillofacial
         )
