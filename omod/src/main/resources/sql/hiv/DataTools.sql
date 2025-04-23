@@ -2638,6 +2638,7 @@ from kenyaemr_etl.etl_vmmc_circumcision_procedure;
       location_id,
       encounter_id,
       (case visit_type when 1246 then 'Scheduled' when 160101 then 'Unscheduled' end) as visit_type,
+      days_since_circumcision,
       (case has_adverse_event when 1065 then 'Yes' when 1066 then 'No' end) as has_adverse_event,
       adverse_event,
       severity,

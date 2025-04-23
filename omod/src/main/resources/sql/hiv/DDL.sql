@@ -3306,6 +3306,7 @@ CREATE TABLE kenyaemr_etl.etl_vmmc_client_followup
   location_id                   INT(11) DEFAULT NULL,
   encounter_id                  INT(11)  NOT NULL,
   visit_type                    INT(11),
+  days_since_circumcision       varchar(50),
   has_adverse_event             INT(11),
   adverse_event                 varchar(255),
   severity                      varchar(100),

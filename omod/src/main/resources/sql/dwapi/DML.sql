@@ -845,7 +845,8 @@ max(if(o.concept_id=1748, o.value_coded, null)) as specific_death_cause,
 max(if(o.concept_id=162580, left(trim(o.value_text),200), null)) as natural_causes,
 max(if(o.concept_id=160218, left(trim(o.value_text),200), null)) as non_natural_cause,
 e.date_created as date_created,
-if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified
+if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified,
+e.voided
 from encounter e
 	inner join person p on p.person_id=e.patient_id and p.voided=0
 	inner join obs o on o.encounter_id=e.encounter_id and o.voided=0 and o.concept_id in (161555,159786,159787,164384,1543,159495,160649,1285,164133,1599,1748,162580,160218)
@@ -6813,6 +6814,7 @@ CREATE PROCEDURE sp_populate_dwapi_vmmc_client_followup()
       location_id,
       encounter_id,
       visit_type,
+      days_since_circumcision,
       has_adverse_event,
       adverse_event,
       severity,
@@ -6829,6 +6831,7 @@ CREATE PROCEDURE sp_populate_dwapi_vmmc_client_followup()
       select
         e.uuid,e.creator,e.patient_id,e.visit_id, date(e.encounter_datetime) as visit_date, e.location_id, e.encounter_id,
                            max(if(o.concept_id = 164181,o.value_coded,null)) as visit_type,
+                           max(if(o.concept_id = 161011,o.value_text,null)) as days_since_circumcision,
                            max(if(o.concept_id = 162871,o.value_coded,null)) as has_adverse_event,
                            concat_ws(',', max(if(o.concept_id = 162875 and o.value_coded = 114403, 'Pain', null)),
                                  max(if(o.concept_id = 162875 and o.value_coded = 147241, 'Bleeding', null)),
@@ -6856,7 +6859,7 @@ CREATE PROCEDURE sp_populate_dwapi_vmmc_client_followup()
       from encounter e
         inner join person p on p.person_id=e.patient_id and p.voided=0
         inner join form f on f.form_id=e.form_id and f.uuid in ('08873f91-7161-4f90-931d-65b131f2b12b')
-        inner join obs o on o.encounter_id = e.encounter_id and o.concept_id in (164181,162871,162875,162760,162749,159369,161011,1473,1542,160632) and o.voided=0
+        inner join obs o on o.encounter_id = e.encounter_id and o.concept_id in (164181,162871,162875,162760,162749,159369,161011,1473,1542,160632, 161011) and o.voided=0
       group by e.patient_id,date(e.encounter_datetime);
 
     SELECT "Completed processing vmmc client followup data ", CONCAT("Time: ", NOW());
@@ -6879,6 +6882,7 @@ CREATE PROCEDURE sp_populate_dwapi_vmmc_client_followup()
             assent_given,
             consent_given,
             hiv_status,
+            hiv_unknown_reason,
             hiv_test_date,
             art_start_date,
             current_regimen,
@@ -6914,6 +6918,7 @@ CREATE PROCEDURE sp_populate_dwapi_vmmc_client_followup()
             device_size,
             other_conventional_method_device_chosen,
             services_referral,
+            other_services_referral,
             date_created,
             date_last_modified,
             voided
@@ -6923,6 +6928,7 @@ CREATE PROCEDURE sp_populate_dwapi_vmmc_client_followup()
             max(if(o.concept_id = 167093,o.value_coded,null)) as assent_given,
             max(if(o.concept_id = 1710,o.value_coded,null)) as consent_given,
             max(if(o.concept_id = 159427,o.value_coded,null)) as hiv_status,
+            max(if(o.concept_id = 165435,o.value_text,null)) as hiv_unknown_reason,
             max(if(o.concept_id = 160554,o.value_datetime,null)) as hiv_test_date,
             max(if(o.concept_id = 159599,o.value_datetime,null)) as art_start_date,
             max(if(o.concept_id = 164855,o.value_coded,null)) as current_regimen,
@@ -6973,13 +6979,14 @@ CREATE PROCEDURE sp_populate_dwapi_vmmc_client_followup()
             concat_ws(',',max(if(o.concept_id = 1272 and o.value_coded = 167125,'STI Treatment',null)),
                       max(if(o.concept_id = 1272 and o.value_coded = 166536,'PrEP Services',null)),
                       max(if(o.concept_id = 1272 and o.value_coded = 190,'Condom dispensing',null))) as services_referral,
+            max(if(o.concept_id = 164359,o.value_text,null)) as other_services_referral,
             e.date_created as date_created,
             if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified,
             e.voided as voided
         from encounter e
                  inner join person p on p.person_id=e.patient_id and p.voided=0
                  inner join form f on f.form_id=e.form_id and f.uuid in ('d42aeb3d-d5d2-4338-a154-f75ddac78b59')
-                 inner join obs o on o.encounter_id = e.encounter_id and o.concept_id in (167093,1710,159427,160554,164855,159599,162053,5096,165239,161550,856,
+                 inner join obs o on o.encounter_id = e.encounter_id and o.concept_id in (167093,1710,159427,160554,164855,159599,162053,5096,165239,161550,856,165435,
                                                                                           5497,1628,1728,163047,1794,163104,21,887,160557,164896,163393,54,161536,
                                                                                           1410,5085,5086,5242,5088,1855,165070,162169,167118,167119,167120,163049,163042,1272) and o.voided=0
         group by e.patient_id,date(e.encounter_datetime);
@@ -7225,8 +7232,8 @@ CREATE PROCEDURE sp_populate_dwapi_hts_eligibility_screening()
         max(if(o.concept_id=5632,(case o.value_coded when 1065 then "YES" when 1066 THEN "NO" when 162570 THEN "Declined to answer" else "" end),null)) as breastfeeding_mother,
         max(if(o.concept_id=162699,o.value_coded,null)) as eligible_for_test,
         max(if(o.concept_id=1788,o.value_coded,null)) as referred_for_testing,
-        max(if(o.concept_id=164082,(case o.value_coded when 165087 then "Client is eligible" when 165091 then "Based on HIV Risk category from EMR" when 1163 then "Both eligible and risk category" else "" end),null)) as reason_to_test,
-        max(if(o.concept_id=160416,(case o.value_coded when 165078 then "Client is NOT eligible" when 165091 then "Based on HIV Risk category from EMR" when 1163 then "Both eligible and risk category" else "" end),null)) as reason_not_to_test,
+        max(if(o.concept_id=164082,(case o.value_coded when 165087 then "HCW Provider Discretion" when 165091 then "Based on Risk screening findings" when 1163 then "ML Risk category" when 163510 then "HTS Guidelines" else "" end),null)) as reason_to_test,
+        max(if(o.concept_id=160416,(case o.value_coded when 165087 then "HCW Provider Discretion" when 165091 then "Based on Risk screening findings" when 1163 then "ML Risk category" when 163510 then "HTS Guidelines" else "" end),null)) as reason_not_to_test,
        concat_ws(',', max(if(o.concept_id = 159803 and o.value_coded = 167156, 'Declined testing', null)),
                   max(if(o.concept_id = 159803 and o.value_coded = 165029, 'Wants to test with partner', null)),
                   max(if(o.concept_id = 159803 and o.value_coded = 160589, 'Stigma related issues', null)),
