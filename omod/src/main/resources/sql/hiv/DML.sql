@@ -887,7 +887,7 @@ et.uuid as program_uuid,
 (case et.uuid
 	when '2bdada65-4c72-4a48-8730-859890e25cee' then 'HIV'
 	when 'd3e3d723-7458-4b4e-8998-408e8a551a84' then 'TB'
-	when '01894f88-dc73-42d4-97a3-0929118403fb' then 'MCH Child HEI'
+	when '01894f88-dc73-42d4-97a3-0929118403fb' then 'MCH Child HEI' -- completion
 	when '5feee3f1-aa16-4513-8bd0-5d9b27ef1208' then 'MCH Child'
 	when '7c426cfc-3b47-4481-b55f-89860c21c7de' then 'MCH Mother'
 	when 'bb77c683-2144-48a5-a011-66d904d776c9' then 'TPT'
@@ -1927,7 +1927,7 @@ BEGIN
 			  max(if(o.concept_id=160753,o.value_datetime,null)) as exit_date,
 			  max(if(o.concept_id=161555,o.value_coded,null)) as exit_reason,
 			  max(if(o.concept_id=159427,(case o.value_coded when 703 then "Positive" when 664 then "Negative" when 1138 then "Inconclusive" else "" end),null)) as hiv_status_at_exit,
-			  case et.uuid when '01894f88-dc73-42d4-97a3-0929118403fb' then 'MCHCS_HEI_COMPLETION' when '415f5136-ca4a-49a8-8db3-f994187c3af6' then 'MCHCS_HEI_ENROLLMENT' end as encounter_type,
+			  case et.uuid when '01894f88-dc73-42d4-97a3-0929118403fb' then 'MCHCS_HEI_COMPLETION' when '5feee3f1-aa16-4513-8bd0-5d9b27ef1208' then 'MCHCS_HEI_COMPLETION' when '415f5136-ca4a-49a8-8db3-f994187c3af6' then 'MCHCS_HEI_ENROLLMENT' end as encounter_type,
 			  e.date_created as date_created,
         if(max(o.date_created) > min(e.date_created),max(o.date_created),NULL) as date_last_modified
 			from encounter e
@@ -1938,7 +1938,7 @@ BEGIN
 				inner join
 				(
 					select encounter_type_id, uuid, name from encounter_type where
-						uuid in('415f5136-ca4a-49a8-8db3-f994187c3af6','01894f88-dc73-42d4-97a3-0929118403fb')
+						uuid in('415f5136-ca4a-49a8-8db3-f994187c3af6','01894f88-dc73-42d4-97a3-0929118403fb','5feee3f1-aa16-4513-8bd0-5d9b27ef1208')
 				) et on et.encounter_type_id=e.encounter_type
 				where e.voided=0
 			group by e.patient_id,visit_date ;
@@ -8410,7 +8410,7 @@ BEGIN
         e.creator,
         date(e.encounter_datetime) as visit_date,
         max(if(o.concept_id=164181,(case o.value_coded when 164180 then 'New visit' when 160530 THEN 'Revisit' when 160563 THEN 'Transfer in' else '' end),null)) as visit_type,
-        max(if(o.concept_id=160338, o.value_coded = 164180, null)) as referred_from,
+        max(if(o.concept_id=160338, o.value_coded, null)) as referred_from,
         concat_ws(',',nullif(max(if(o.concept_id=164174 and o.value_coded = 1107,'None','')),''),
                   nullif(max(if(o.concept_id=164174 and o.value_coded = 165225,'Support service provided','')),''),
                   nullif(max(if(o.concept_id=164174 and o.value_coded = 163319,'Behavioural activation therapy','')),''),
