@@ -538,6 +538,7 @@ SELECT "Successfully created etl_patient_program_discontinuation table";
     urine_colour INT(11),
     urine_turbidity INT(11),
     urine_dipstick_for_blood INT(11),
+    sub_program VARCHAR(255),
     date_of_discontinuation DATETIME,
     discontinuation_reason INT(11),
     date_created DATETIME NOT NULL,

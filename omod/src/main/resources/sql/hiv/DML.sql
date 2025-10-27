@@ -968,6 +968,7 @@ CREATE PROCEDURE sp_populate_etl_mch_enrollment()
 			urine_colour,
 			urine_turbidity,
 			urine_dipstick_for_blood,
+            sub_program,
 			-- date_of_discontinuation,
 			discontinuation_reason,
 			date_created,
@@ -1014,6 +1015,7 @@ CREATE PROCEDURE sp_populate_etl_mch_enrollment()
 				max(if(o.concept_id=162106,o.value_coded,null)) as urine_colour,
 				max(if(o.concept_id=162101,o.value_coded,null)) as urine_turbidity,
 				max(if(o.concept_id=162096,o.value_coded,null)) as urine_dipstick_for_blood,
+                f.name as sub_program,
 				-- max(if(o.concept_id=161655,o.value_text,null)) as date_of_discontinuation,
 				max(if(o.concept_id=161555,o.value_coded,null)) as discontinuation_reason,
 				e.date_created as date_created,
@@ -1024,9 +1026,11 @@ CREATE PROCEDURE sp_populate_etl_mch_enrollment()
 														and o.concept_id in(163530,163547,5624,160080,1823,160598,1427,162095,5596,300,299,160108,32,159427,160554,1436,160082,159599,164855,162724,56,1875,159734,161438,161439,161440,161441,161442,161444,161443,162106,162101,162096,161555,160478)
 				inner join
 				(
-					select encounter_type_id, uuid, name from encounter_type where
-						uuid in('3ee036d8-7c13-4393-b5d6-036f2fe45126')
-				) et on et.encounter_type_id=e.encounter_type
+					select form_id, uuid, name from form where
+						uuid in ('236161a4-29ad-4282-9829-6684aab85daa', '286598d5-1886-4f0d-9e5f-fa5473399cee',
+                                 '5a07d260-77d7-477d-8ae5-f5bc2fb4a1e5',
+                                 'b287050b-f9a5-4929-96b0-31ac602384e1', '90a18f0c-17cd-4eec-8204-5af52e8d77cf')
+				) f on f.form_id =e.form_id
 				where e.voided=0
 			group by e.encounter_id;
 		SELECT "Completed processing MCH Enrollments ", CONCAT("Time: ", NOW());
@@ -4690,6 +4694,11 @@ CREATE PROCEDURE sp_populate_etl_patient_program()
                      when 'ffee43c4-9ccd-4e55-8a70-93194e7fafc6' then 'NCD'
                      when '8cd42506-2ebd-485f-89d6-4bb9ed328ccc' then 'CPM'
                      when '214cad1c-bb62-4d8e-b927-810a046daf62' then 'PrEP'
+                     when 'fd549de0-2e6d-4e76-a2c1-64df26351bdd' then 'Pre-Conception Care'
+                     when '191269d2-9973-4958-9936-f687ed771050' then 'Family Planning'
+                     when '286598d5-1886-4f0d-9e5f-fa5473399cee' then 'Postnatal Care'
+                     when '72635673-0613-4259-916e-e0d5d5ef8f66' then 'Antenatal Care'
+                     when '504f179b-4a13-4790-9ecd-ca4963448af8' then 'Nutrition' -- Program UUIDs reference
 				end) as program,
 				pp.date_enrolled,
 				pp.date_completed,
